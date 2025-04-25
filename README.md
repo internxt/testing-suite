@@ -21,11 +21,11 @@ playwright install --with-deps
 
 
 🌐 JavaScript / TypeScript (Web Testing)
-4. Install Node Modules
-npm install
+4. Install Node Modules with Yarn
+yarn install
 
 5. Install Playwright Browsers
-npx playwright install
+yarn playwright install
 
 
 6. Set Up Python Virtual Environment (to write desktop app tests)
@@ -44,11 +44,11 @@ deactivate
 
 ✅ Run All Tests
 
-npx playwright test
+yarn playwright test
 
 👀 Run Test in Debug Mode 
 
-npx playwright test --debug
+yarn playwright test --debug
 
 This will open a Playwright inspector where you can pause, step through code, and resume test execution.
 

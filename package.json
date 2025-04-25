@@ -19,9 +19,11 @@
   "homepage": "https://github.com/internxt/testing-suite#readme",
   "devDependencies": {
     "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.2",
     "playwright": "^1.52.0"
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "fsevents": "^2.3.2",
     "playwright-core": "^1.52.0"
   }
