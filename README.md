@@ -18,6 +18,7 @@ venv\Scripts\activate    # On Windows
 3. Install Dependencies
 pip install -r requirements.txt
 playwright install --with-deps
+pip install Appium-Python-Client
 
 
 🌐 JavaScript / TypeScript (Web Testing)
@@ -57,6 +58,38 @@ This will open a Playwright inspector where you can pause, step through code, an
 pytest tests/desktop/macos
 pytest tests/desktop/windows
 pytest tests/desktop/linux
+
+🍏 macOS Desktop App Automation with Appium
+Requirements:
+
+1. Appium installed globally:
+
+npm install -g appium
+
+2. Appium server must be running:
+
+appium
+
+3. Xcode must be installed (required by Mac2 driver)
+
+4. System Permissions: Grant Appium, Terminal, and Xcode access under:
+System Settings > Privacy & Security > Accessibility
+
+▶️ Run macOS App Test:
+1. Make sure your virtual environment is activated
+
+source venv/bin/activate
+
+ 2. Start Appium server
+In a separate terminal tab, run:
+
+appium
+
+3. Run your macOS test
+From the main terminal tab, execute:
+
+pytest tests/desktop/macos/...
+
 
 🧭 Test Structure
 Tests are located in the 'tests' folder.

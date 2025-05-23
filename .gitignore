@@ -31,7 +31,7 @@ Thumbs.db
 htmlcov/
 coverage.xml
 .cache/
-pytest_cache/
+.pytest_cache/
 test-results/
 
 
