@@ -1,16 +1,15 @@
-# tests/conftest.py
+
 import os
-import tempfile
-import atexit
-import subprocess
 import time
-
 import pytest
+from dotenv import load_dotenv
 
-from selenium import webdriver as selenium_webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.chrome.service import Service as ChromeService
+load_dotenv()
+
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver as selenium_webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 from appium import webdriver as appium_webdriver
 from appium.webdriver.common.appiumby import AppiumBy
@@ -20,62 +19,66 @@ from selenium.webdriver.support import expected_conditions as EC
 from helpers.capabilities import get_mac_capabilities
 from helpers.app_helpers import bring_app_to_front
 
-# ------ Native App Fixture ------
+# === slow‐mode support ========================================================
+# How many seconds to pause between every action (click, send_keys, get)
+SLOW_MODE = float(os.getenv("SLOW_MODE", "0"))
+
+def slow():
+    if SLOW_MODE > 0:
+        time.sleep(SLOW_MODE)
+
+# Automatically patch key WebDriver/WebElement methods to insert slow() calls
+@pytest.fixture(autouse=True)
+def _inject_slowdown(monkeypatch):
+    from selenium.webdriver.remote.webelement import WebElement
+    from selenium.webdriver.remote.webdriver import WebDriver
+
+    # patch WebElement.click()
+    orig_click = WebElement.click
+    def click_and_pause(self, *args, **kwargs):
+        slow()
+        result = orig_click(self, *args, **kwargs)
+        slow()
+        return result
+    monkeypatch.setattr(WebElement, "click", click_and_pause)
+
+    # patch WebElement.send_keys()
+    orig_send = WebElement.send_keys
+    def send_keys_and_pause(self, *args, **kwargs):
+        slow()
+        result = orig_send(self, *args, **kwargs)
+        slow()
+        return result
+    monkeypatch.setattr(WebElement, "send_keys", send_keys_and_pause)
+
+    # patch WebDriver.get()
+    orig_get = WebDriver.get
+    def get_and_pause(self, url, *args, **kwargs):
+        slow()
+        result = orig_get(self, url, *args, **kwargs)
+        slow()
+        return result
+    monkeypatch.setattr(WebDriver, "get", get_and_pause)
+
+    yield
+
+# === Native macOS Appium fixture ==============================================
 @pytest.fixture(scope="session")
 def driver():
-    """
-    Launches the macOS app under test via Appium and waits for the initial screen.
-    """
-    options = get_mac_capabilities()
-    mac_driver = appium_webdriver.Remote("http://localhost:4723", options=options)
-
-    # Bring the app window to front so Appium can interact with it
+    opts = get_mac_capabilities()
+    mac = appium_webdriver.Remote("http://localhost:4723", options=opts)
     bring_app_to_front("Internxt Drive")
-
-    # Wait until we see the "Welcome to Internxt" label
-    WebDriverWait(mac_driver, 20).until(
+    WebDriverWait(mac, 20).until(
         EC.presence_of_element_located((AppiumBy.NAME, "Welcome to Internxt"))
     )
+    yield mac
+    # mac.quit()
 
-    yield mac_driver
-
-    # Tear down Appium session at end of session
-    mac_driver.quit()
-
-
-# ------ Browser Fixture ------
+# === Stand-alone Selenium Chrome fixture =====================================
 @pytest.fixture(scope="session")
 def browser_driver():
-    """
-    Starts a fresh Chrome with remote-debugging enabled, then attaches Selenium to it.
-    """
-    # 1) create a temporary user-data directory
-    user_data_dir = tempfile.mkdtemp(prefix="selenium_chrome_")
-    # ensure we clean it up on process exit
-    atexit.register(lambda: subprocess.call(["rm", "-rf", user_data_dir]))
-
-    # 2) launch a new Chrome pointing at that profile & enable remote debugging
-    chrome_exe = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    subprocess.Popen([
-        chrome_exe,
-        "--remote-debugging-port=9222",
-        f"--user-data-dir={user_data_dir}",
-        "--no-first-run",
-        "--no-default-browser-check",
-        "--disable-default-apps",
-    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    # give Chrome a moment to start up
-    time.sleep(3)
-
-    # 3) attach Selenium WebDriver to that running instance
-    chrome_opts = ChromeOptions()
-    chrome_opts.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-
     service = ChromeService(ChromeDriverManager().install())
-    web_driver = selenium_webdriver.Chrome(service=service, options=chrome_opts)
-
-    yield web_driver
-
-    # Tear down
-    web_driver.quit()
+    chrome_opts = ChromeOptions()
+    driver = selenium_webdriver.Chrome(service=service, options=chrome_opts)
+    yield driver
+    # driver.quit()
