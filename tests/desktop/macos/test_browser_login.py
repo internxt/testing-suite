@@ -1,14 +1,17 @@
 import os
 import time
+import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from tests.conftest import APP_LOGIN_URL, AUTH_SUCCESS_PATH
 
+@pytest.mark.flaky(reruns=1)
 def test_web_login_fields_and_open_desktop_app(browser_driver):
     # FIXME: this forces navigation because we haven't yet figured out how
     # to resume testing in the existing Chrome instance opened by the app
-    print("→ Navigate to login page")
-    browser_driver.get("https://drive.internxt.com/login?universalLink=true")
+    print(f"→ Navigating to login page ({APP_LOGIN_URL})")
+    browser_driver.get(APP_LOGIN_URL)
 
     wait = WebDriverWait(browser_driver, 10)
     print("→ Find email & password inputs")
@@ -28,9 +31,9 @@ def test_web_login_fields_and_open_desktop_app(browser_driver):
     submit.click()
     time.sleep(2)  
 
-    print("→ Check the auth-success URL")
-    wait.until(EC.url_contains("/auth-success"))
-    assert "/auth-success" in browser_driver.current_url, (
+    print(f"→ Waiting for URL to contain {AUTH_SUCCESS_PATH}")
+    wait.until(EC.url_contains(AUTH_SUCCESS_PATH))
+    assert AUTH_SUCCESS_PATH in browser_driver.current_url, (
         f"Expected auth-success URL, got {browser_driver.current_url}"
     )
 

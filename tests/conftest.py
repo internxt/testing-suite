@@ -19,6 +19,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from helpers.capabilities import get_mac_capabilities
 from helpers.app_helpers import bring_app_to_front
 
+APP_LOGIN_URL = "https://drive.internxt.com/login?universalLink=true"
+WEB_LOGIN_URL = "https://drive.internxt.com/login"
+AUTH_SUCCESS_PATH = "/auth-success"
+RECOVERY_PATH = "/recovery-link"
+
 # === slow‐mode support ========================================================
 # How many seconds to pause between every action (click, send_keys, get)
 SLOW_MODE = float(os.getenv("SLOW_MODE", "0"))
