@@ -4,10 +4,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from tests.conftest import APP_LOGIN_URL
-
 # FIXME: this forces navigation because we haven't yet figured out how
 # to resume testing in the existing Chrome instance opened by the app
+print("→ Navigate to login page")
+LOGIN_URL = "https://drive.internxt.com/login?universalLink=true"
 
 @pytest.mark.parametrize("email,pwd,field_selector", [
     ("",        "",        '[data-cy="emailInput"]'),    # both empty → email first
@@ -19,9 +19,9 @@ def test_empty_required_field_shows_native_validation(browser_driver, email, pwd
     Submitting with a missing required field should trigger
     the browser's native validationMessage on that input.
     """
-    print(f"→ Open {APP_LOGIN_URL!r} (email={email!r}, pwd={pwd!r})")
+    print(f"→ Open {LOGIN_URL} (email={email!r}, pwd={pwd!r})")
     driver = browser_driver
-    driver.get(APP_LOGIN_URL)
+    driver.get(LOGIN_URL)
 
     print("→ Fill inputs")
     driver.find_element(By.CSS_SELECTOR, '[data-cy="emailInput"]').send_keys(email)
@@ -47,9 +47,9 @@ def test_invalid_credentials_shows_server_error(browser_driver, email, pwd):
     Bad email + good password, and good email + bad password
     should both stay on /login and show “Wrong login credentials”.
     """
-    print(f"→ Open {APP_LOGIN_URL} (email={email!r}, pwd={pwd!r})")
+    print(f"→ Open {LOGIN_URL} (email={email!r}, pwd={pwd!r})")
     driver = browser_driver
-    driver.get(APP_LOGIN_URL)
+    driver.get(LOGIN_URL)
     wait = WebDriverWait(driver, 5)
 
     print("→ Fill email & password fields")

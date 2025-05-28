@@ -77,7 +77,6 @@ def driver():
         EC.presence_of_element_located((AppiumBy.NAME, "Welcome to Internxt"))
     )
     yield mac
-    # mac.quit()
 
 # === Stand-alone Selenium Chrome fixture =====================================
 @pytest.fixture(scope="session")
@@ -86,4 +85,3 @@ def browser_driver():
     chrome_opts = ChromeOptions()
     driver = selenium_webdriver.Chrome(service=service, options=chrome_opts)
     yield driver
-    # driver.quit()
