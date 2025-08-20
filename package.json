@@ -1,30 +1,10 @@
 {
   "name": "testing-suite",
-  "version": "1.0.0",
-  "description": "End-to-end test automation for Internxt Drive (web + desktop apps)",
-  "main": "index.js",
-  "scripts": {
-    "test": "npx playwright test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/internxt/testing-suite.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/internxt/testing-suite/issues"
-  },
-  "homepage": "https://github.com/internxt/testing-suite#readme",
+  "packageManager": "yarn@4.9.2",
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
-    "@types/node": "^22.15.2",
-    "playwright": "^1.52.0"
+    "playwright": "^1.54.2"
   },
   "dependencies": {
-    "dotenv": "^16.5.0",
-    "fsevents": "^2.3.2",
-    "playwright-core": "^1.52.0"
+    "dotenv": "^17.2.1"
   }
 }
