@@ -75,5 +75,5 @@ const { _electron: electron } = require('playwright');
     console.error("❌ Failed to log out:", e);
   }
 
-  // await app.close(); 
+  await app.close(); 
 })();
