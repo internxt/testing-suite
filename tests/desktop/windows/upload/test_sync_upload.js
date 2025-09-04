@@ -37,7 +37,7 @@ function logFileContents(filepath, ext) {
     console.log(`📄 File contents preview:\n ${content}`);
   } else {
     const buffer = fs.readFileSync(filepath);
-    const hexPreview = buffer.toString('hex', 0, 16); // show first 16 bytes
+    const hexPreview = buffer.toString('hex', 0, 16); 
     console.log(`📄 Binary preview (first 16 bytes): ${hexPreview}...`);
   }
 }
@@ -76,7 +76,6 @@ async function runSyncTestForFile(filename) {
     console.error("❌ File not found after waiting:", e.message);
   }
 
-  // Optional: fs.unlinkSync(destPath);
 }
 
 (async () => {
