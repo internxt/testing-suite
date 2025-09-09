@@ -10,13 +10,23 @@ if (!SYNC_FOLDER || !fs.existsSync(SYNC_FOLDER)) {
   process.exit(1);
 }
 
-const FIXTURE_FILES = [
-  'testfile.txt',
-  'testfile.pdf',
-  'testfile.png'
-];
+const {
+  createTextFile,
+  createPdfFile,
+  createPngFile,
+  createDocxFile
+} = require('../../../../helpers/fixtureGenerators');
 
-const FIXTURE_DIR = path.join(__dirname, 'fixtures');
+const TEMP_FIXTURE_DIR = path.join(__dirname, 'temp-fixtures');
+if (!fs.existsSync(TEMP_FIXTURE_DIR)) {
+  fs.mkdirSync(TEMP_FIXTURE_DIR);
+}
+const FIXTURE_FILES = [
+  { name: 'testfile.txt', generator: createTextFile },
+  { name: 'testfile.pdf', generator: createPdfFile },
+  { name: 'testfile.png', generator: createPngFile },
+  { name: 'testfile.docx', generator: createDocxFile }
+];
 
 function generateUniqueFilename(extension) {
   const timestamp = Date.now();
@@ -42,9 +52,12 @@ function logFileContents(filepath, ext) {
   }
 }
 
-async function runSyncTestForFile(filename) {
+async function runSyncTestForFile(filename, generatorFn) {
   const ext = path.extname(filename).slice(1);
-  const sourcePath = path.join(FIXTURE_DIR, filename);
+  const tempPath = path.join(TEMP_FIXTURE_DIR, filename);
+
+  generatorFn(tempPath);
+  
   const destFilename = generateUniqueFilename(ext);
   const destPath = path.join(SYNC_FOLDER, destFilename);
 
@@ -52,7 +65,7 @@ async function runSyncTestForFile(filename) {
   console.log(`📤 Copying to sync folder: ${destPath}`);
 
   try {
-    fs.copyFileSync(sourcePath, destPath);
+    fs.copyFileSync(tempPath, destPath);
   } catch (err) {
     console.error(`❌ Failed to copy ${filename}:`, err.message);
     return;
@@ -80,7 +93,7 @@ async function runSyncTestForFile(filename) {
 
 (async () => {
   console.log("🧪 Starting multi-file sync upload test...");
-  for (const file of FIXTURE_FILES) {
-    await runSyncTestForFile(file);
+  for (const { name, generator } of FIXTURE_FILES) {
+    await runSyncTestForFile(name,generator);
   }
 })();

@@ -33,5 +33,6 @@ coverage.xml
 .cache/
 .pytest_cache/
 test-results/
+temp-fixtures/
 
 
