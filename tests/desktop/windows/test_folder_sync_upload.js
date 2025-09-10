@@ -27,17 +27,25 @@ function wait(ms) {
 function createTestFolderStructure(targetFolder) {
   fs.mkdirSync(targetFolder, { recursive: true });
 
+  const fileSizeInBytes = 5 * 1024 * 1024;
+  const buffer = Buffer.alloc(fileSizeInBytes);
+
+  for (let i = 0; i < fileSizeInBytes; i++) {
+    buffer[i] = Math.floor(Math.random() * 256);
+  }
+
   const files = [
-    { name: 'file1.txt', content: 'This is file 1 in folder.' },
-    { name: 'file2.txt', content: 'This is file 2 in folder.' },
+    { name: 'file1.txt' },
+    { name: 'file2.txt' },
   ];
 
   files.forEach(file => {
-    fs.writeFileSync(path.join(targetFolder, file.name), file.content);
+    fs.writeFileSync(path.join(targetFolder, file.name), buffer);
   });
 
   console.log(`📁 Created test folder with ${files.length} files: ${targetFolder}`);
 }
+
 
 (async () => {
   console.log("🔄 Starting folder sync upload test...");
